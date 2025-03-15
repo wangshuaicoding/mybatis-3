@@ -51,11 +51,16 @@ import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.Configuration;
 
 /**
+ * typeHandler注册管理类
+ *
  * @author Clinton Begin
  * @author Kazuki Shimizu
  */
 public final class TypeHandlerRegistry {
 
+  //源码一上来，二话不说，几个大大的HashMap就出现，这不又跟上次讲的typeAliases的注册类似么
+
+  //基本数据类型与其包装类
   private final Map<JdbcType, TypeHandler<?>> jdbcTypeHandlerMap = new EnumMap<>(JdbcType.class);
   private final Map<Type, Map<JdbcType, TypeHandler<?>>> typeHandlerMap = new ConcurrentHashMap<>();
   private final TypeHandler<Object> unknownTypeHandler;
@@ -75,9 +80,7 @@ public final class TypeHandlerRegistry {
   /**
    * The constructor that pass the MyBatis configuration.
    *
-   * @param configuration
-   *          a MyBatis configuration
-   *
+   * @param configuration a MyBatis configuration
    * @since 3.5.4
    */
   public TypeHandlerRegistry(Configuration configuration) {
@@ -187,9 +190,7 @@ public final class TypeHandlerRegistry {
    * Set a default {@link TypeHandler} class for {@link Enum}. A default {@link TypeHandler} is
    * {@link org.apache.ibatis.type.EnumTypeHandler}.
    *
-   * @param typeHandler
-   *          a type handler class for {@link Enum}
-   *
+   * @param typeHandler a type handler class for {@link Enum}
    * @since 3.4.5
    */
   public void setDefaultEnumTypeHandler(Class<? extends TypeHandler> typeHandler) {
@@ -486,7 +487,6 @@ public final class TypeHandlerRegistry {
    * Gets the type handlers.
    *
    * @return the type handlers
-   *
    * @since 3.2.2
    */
   public Collection<TypeHandler<?>> getTypeHandlers() {

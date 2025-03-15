@@ -18,6 +18,8 @@ package org.apache.ibatis.parsing;
 import java.util.Properties;
 
 /**
+ * 这个类解析${}这种形式的表达式
+ *
  * @author Clinton Begin
  * @author Kazuki Shimizu
  */
