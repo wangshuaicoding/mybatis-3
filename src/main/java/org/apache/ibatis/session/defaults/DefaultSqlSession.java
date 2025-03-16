@@ -77,7 +77,7 @@ public class DefaultSqlSession implements SqlSession {
     }
     if (list.size() > 1) {
       throw new TooManyResultsException(
-          "Expected one result (or null) to be returned by selectOne(), but found: " + list.size());
+        "Expected one result (or null) to be returned by selectOne(), but found: " + list.size());
     } else {
       return null;
     }
@@ -97,7 +97,7 @@ public class DefaultSqlSession implements SqlSession {
   public <K, V> Map<K, V> selectMap(String statement, Object parameter, String mapKey, RowBounds rowBounds) {
     final List<? extends V> list = selectList(statement, parameter, rowBounds);
     final DefaultMapResultHandler<K, V> mapResultHandler = new DefaultMapResultHandler<>(mapKey,
-        configuration.getObjectFactory(), configuration.getObjectWrapperFactory(), configuration.getReflectorFactory());
+      configuration.getObjectFactory(), configuration.getObjectWrapperFactory(), configuration.getReflectorFactory());
     final DefaultResultContext<V> context = new DefaultResultContext<>();
     for (V o : list) {
       context.nextResultObject(o);
@@ -150,6 +150,7 @@ public class DefaultSqlSession implements SqlSession {
     try {
       MappedStatement ms = configuration.getMappedStatement(statement);
       dirty |= ms.isDirtySelect();
+      // CRUD实际上是交给Excetor去处理， excutor其实也只是穿了个马甲而已，小样，别以为穿个马甲我就不认识你嘞！
       return executor.query(ms, wrapCollection(parameter), rowBounds, handler);
     } catch (Exception e) {
       throw ExceptionFactory.wrapException("Error querying database.  Cause: " + e, e);

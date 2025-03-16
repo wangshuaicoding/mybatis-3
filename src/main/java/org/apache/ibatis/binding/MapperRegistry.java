@@ -42,11 +42,13 @@ public class MapperRegistry {
 
   @SuppressWarnings("unchecked")
   public <T> T getMapper(Class<T> type, SqlSession sqlSession) {
+    // 能偷懒的就偷懒，俺把粗活交给MapperProxyFactory去做
     final MapperProxyFactory<T> mapperProxyFactory = (MapperProxyFactory<T>) knownMappers.get(type);
     if (mapperProxyFactory == null) {
       throw new BindingException("Type " + type + " is not known to the MapperRegistry.");
     }
     try {
+      // 关键在这
       return mapperProxyFactory.newInstance(sqlSession);
     } catch (Exception e) {
       throw new BindingException("Error getting mapper instance. Cause: " + e, e);
@@ -83,7 +85,6 @@ public class MapperRegistry {
    * Gets the mappers.
    *
    * @return the mappers
-   *
    * @since 3.2.2
    */
   public Collection<Class<?>> getMappers() {
@@ -93,11 +94,8 @@ public class MapperRegistry {
   /**
    * Adds the mappers.
    *
-   * @param packageName
-   *          the package name
-   * @param superType
-   *          the super type
-   *
+   * @param packageName the package name
+   * @param superType   the super type
    * @since 3.2.2
    */
   public void addMappers(String packageName, Class<?> superType) {
@@ -112,9 +110,7 @@ public class MapperRegistry {
   /**
    * Adds the mappers.
    *
-   * @param packageName
-   *          the package name
-   *
+   * @param packageName the package name
    * @since 3.2.2
    */
   public void addMappers(String packageName) {

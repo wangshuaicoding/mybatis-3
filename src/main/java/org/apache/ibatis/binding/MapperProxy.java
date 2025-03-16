@@ -51,16 +51,18 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
       privateLookupInMethod = MethodHandles.class.getMethod("privateLookupIn", Class.class, MethodHandles.Lookup.class);
     } catch (NoSuchMethodException e) {
       throw new IllegalStateException(
-          "There is no 'privateLookupIn(Class, Lookup)' method in java.lang.invoke.MethodHandles.", e);
+        "There is no 'privateLookupIn(Class, Lookup)' method in java.lang.invoke.MethodHandles.", e);
     }
   }
 
+  // MapperProxy在执行时会触发此方法
   @Override
   public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
     try {
       if (Object.class.equals(method.getDeclaringClass())) {
         return method.invoke(this, args);
       }
+      // 二话不说，主要交给MapperMethod自己去管
       return cachedInvoker(method).invoke(proxy, method, args, sqlSession);
     } catch (Throwable t) {
       throw ExceptionUtil.unwrapThrowable(t);
@@ -86,11 +88,11 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
   }
 
   private MethodHandle getMethodHandleJava9(Method method)
-      throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
     final Class<?> declaringClass = method.getDeclaringClass();
     return ((Lookup) privateLookupInMethod.invoke(null, declaringClass, MethodHandles.lookup())).findSpecial(
-        declaringClass, method.getName(), MethodType.methodType(method.getReturnType(), method.getParameterTypes()),
-        declaringClass);
+      declaringClass, method.getName(), MethodType.methodType(method.getReturnType(), method.getParameterTypes()),
+      declaringClass);
   }
 
   private static class PlainMethodInvoker implements MapperMethodInvoker {

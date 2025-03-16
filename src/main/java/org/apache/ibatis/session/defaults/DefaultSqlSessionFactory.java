@@ -91,14 +91,26 @@ public class DefaultSqlSessionFactory implements SqlSessionFactory {
     return new DefaultSqlSession(configuration, executor, autoCommit);
   }
 
+  /**
+   * 通常一系列openSession方法最终都会调用本方法
+   *
+   * @param execType
+   * @param level
+   * @param autoCommit
+   * @return
+   */
   private SqlSession openSessionFromDataSource(ExecutorType execType, TransactionIsolationLevel level,
-      boolean autoCommit) {
+                                               boolean autoCommit) {
     Transaction tx = null;
     try {
+      // 通过Confuguration对象去获取Mybatis相关配置信息, Environment对象包含了数据源和事务的配置
       final Environment environment = configuration.getEnvironment();
+      // MyBatis对事务的处理相对简单，TransactionIsolationLevel中定义了几种隔离级别，并不支持内嵌事务这样较复杂的场景，同时由于其是持久层的缘故，所以真正在应用开发中会委托Spring来处理事务实现真正的与开发者隔离。分析事务的实现是个入口，借此可以了解不少JDBC规范方面的事情。
       final TransactionFactory transactionFactory = getTransactionFactoryFromEnvironment(environment);
       tx = transactionFactory.newTransaction(environment.getDataSource(), level, autoCommit);
+      // 之前说了，从表面上来看，咱们是用sqlSession在执行sql语句， 实际呢，其实是通过excutor执行， excutor是对于Statement的封装
       final Executor executor = configuration.newExecutor(tx, execType);
+      // 关键看这儿，创建了一个DefaultSqlSession对象
       return createSqlSession(configuration, executor, autoCommit);
     } catch (Exception e) {
       closeTransaction(tx); // may have fetched a connection so lets call close()
